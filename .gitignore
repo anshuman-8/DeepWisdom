@@ -1,2 +1,2 @@
-./NeuralNetwork/data
-./ResNet/data/*
+NeuralNetwork/data
+ResNet/data/
