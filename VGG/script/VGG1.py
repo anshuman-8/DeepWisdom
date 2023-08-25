@@ -22,10 +22,10 @@ VGG16 = [64, 64, 'M', 128,128,'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 
 VGG1 = [64, 64, 'M', 128, 128, 'M', 256, 256, 'M']
 
 class VGGNet1(nn.Module):
-    def __init__(self, in_channels=1, num_classes=1000, architecture=VGG1):
+    def __init__(self, in_channels=1, num_classes=10, architecture=VGG1):
         super(VGGNet1, self).__init__()
         self.in_channels = in_channels
-        self.conv_layers = self.create_conv_layer(VGG1)
+        self.conv_layers = self.create_conv_layer(architecture)
         self.fcs = nn.Sequential(
             nn.Linear(2304, 2048),
             nn.ReLU(),
@@ -35,14 +35,12 @@ class VGGNet1(nn.Module):
             nn.Dropout(p=0.5),
             nn.Linear(2048,num_classes)
         )
-        self.softMax = nn.Softmax(dim=1)
 
 
     def forward(self, x):
         out = self.conv_layers(x)
         out = out.reshape(out.shape[0], -1)
         out = self.fcs(out)
-        out = self.softMax(out)
         return out
 
     def create_conv_layer(self, architecture):
@@ -65,8 +63,8 @@ class VGGNet1(nn.Module):
 
 def main():
     #Download the dataset
-    train_dataset = Dataset.EMNIST(root="./data", train=True, transform=Transforms.ToTensor(), split="balanced", download=True)
-    test_dataset = Dataset.EMNIST(root="./data", train=False, transform=Transforms.ToTensor(), split="balanced", download=True)
+    train_dataset = Dataset.EMNIST(root="./data", train=True, transform=Transforms.ToTensor(), split="mnist", download=True)
+    test_dataset = Dataset.EMNIST(root="./data", train=False, transform=Transforms.ToTensor(), split="mnist", download=True)
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=True)
@@ -160,3 +158,8 @@ def train(model, epochs, criterion, optimizer, scheduler, train_loader, test_loa
 
     return train_losses, train_acc
             
+
+# if __name__ == "__main__":
+#     main()
+
+main()
